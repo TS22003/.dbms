@@ -182,7 +182,7 @@ int main(){
 			ListStubyBranchandAddress(b,a);
 			break;
 			case 7:return 0;
-			default:("Invalid choice! Try again\n");
+			default:printf("Invalid choice! Try again\n");
 			break;
 		}
 	}
