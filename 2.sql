@@ -1,48 +1,32 @@
-/* Create a database to store student records */
-CREATE DATABASE IF NOT EXISTS students;
+DROP DATABASE IF EXISTS student_104;
 
-/* Changing database */
-USE students;
+CREATE DATABASE student_104;
+USE student_104;
 
-/* Create table to store records with required fields */
-CREATE TABLE IF NOT EXISTS student_rec (
-    Student_ID TEXT NOT NULL,
-    Student_name TEXT NOT NULL,
-    Branch TEXT NOT NULL,
-    SEMESTER INTEGER NOT NULL,
-    Student_Address TEXT NOT NULL,
-    Phone_Number TEXT,
-    Email TEXT
+CREATE TABLE IF NOT EXISTS Student (
+    sid VARCHAR(25) primary key,
+    name VARCHAR(35) not null,
+    branch VARCHAR(25) not null,
+    semester int not null,
+    address VARCHAR(255),
+    phone VARCHAR(35),
+    email VARCHAR(50),
 );
 
-/* Add 5 students */
-INSERT INTO student_rec VALUES
-("01JST20CS160", "Srirama", "CSE", 5, "Shaktinagar, Mysuru", "9148466270", "sriramarbhat@gmail.com"),
-("01JST20EC154", "Test_1", "ECE", 3, "Siddarthanagar, Mysuru", "8743587342", "test_1@gmail.com"),
-("01JST20EE144", "Test_2", "EEE", 1, "Lakshmipuram, Mysuru", "4878466270", "test_2@gmail.com"),
-("01JST20CS163", "Test_3", "CSE", 5, "Kuvempunagar, Mysuru", "5648746583", "test_3@gmail.com"),
-("01JST20IS134", "Test_4", "ISE", 3, "Kuvempunagar, Mysuru", "4738924456", "test_4@gmail.com");
+INSERT INTO Student VALUES 
+("1","A","CSE",5,"Bogadi","9432615389","anA@gmail.com"),
+("2","B","EC",5,"Banglore","9776142539","beB@gmail.com"),
+("3","C","CSE",5,"Kuvempunagar","9437465882","csCE@gmail.com"),
+("4","D","EI",5,"Hebbal","93516264738","dh@gmail.com");
 
-/* List all students */
-SELECT * FROM student_rec;
+UPDATE Student SET address="Vijaynagar" where sid ="2";
 
-/* Add single student */
-INSERT INTO student_rec VALUES
-("01JST20CS263", "Test_5", "CSE", 3, "Kuvempunagar, Mysuru", "5475674536", "test_5@gmail.com");
+SELECT * FROM Student;
 
-SELECT * FROM student_rec;
+delete from Student where sid = "4";
 
-UPDATE student_rec SET Student_Address = "Saraswatipuram, Mysuru" WHERE Student_ID = "01JST20EE144";
+SELECT * FROM Student;
 
-SELECT * FROM student_rec;
+SELECT * from Student where branch="CSE";
 
-/* Delete a student */
-DELETE FROM student_rec WHERE Student_ID = "01JST20EC154";
-
-SELECT * FROM student_rec;
-
-COMMIT;
-
-SELECT * FROM student_rec WHERE Branch = "CSE";
-
-SELECT * FROM student_rec WHERE Branch = "CSE" AND Student_Address LIKE "%Kuvempunagar%";
+SELECT * from Student where branch="CSE" and address="Kuvempunagar";
