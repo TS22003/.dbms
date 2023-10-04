@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS Student (
     semester int not null,
     address VARCHAR(255),
     phone VARCHAR(35),
-    email VARCHAR(50),
+    email VARCHAR(50)
 );
 
 INSERT INTO Student VALUES 
