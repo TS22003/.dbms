@@ -1,0 +1,102 @@
+Sailors Database
+Find the colors of boats reserved by Albert
+SELECT DISTINCT BOAT.color
+FROM SAILORS
+JOIN RESERVERS ON SAILORS.sid = RESERVERS.sid
+JOIN BOAT ON RESERVERS.bid = BOAT.bid
+WHERE SAILORS.sname = 'Albert';
+Find all sailor id’s of sailors who have a rating of at least 8 or reserved boat 103
+SELECT DISTINCT SAILORS.sid
+FROM SAILORS
+LEFT JOIN RESERVERS ON SAILORS.sid = RESERVERS.sid
+WHERE SAILORS.rating >= 8 OR RESERVERS.bid = 103;
+Find the names of sailors who have not reserved a boat whose name contains the string “storm”. Order the names in ascending order.
+SELECT DISTINCT SAILORS.sname
+FROM SAILORS
+LEFT JOIN RESERVERS ON SAILORS.sid = RESERVERS.sid
+LEFT JOIN BOAT ON RESERVERS.bid = BOAT.bid
+WHERE BOAT.bname NOT LIKE '%storm%'
+ORDER BY SAILORS.sname ASC;
+Find the names of sailors who have reserved all boats.
+SELECT S.sname
+FROM SAILORS S
+WHERE NOT EXISTS (
+    SELECT B.bid
+    FROM BOAT B
+    WHERE NOT EXISTS (
+        SELECT R.bid
+        FROM RESERVERS R
+        WHERE R.sid = S.sid AND R.bid = B.bid
+    )
+);
+Find the name and age of the oldest sailor.
+SELECT sname, age
+FROM SAILORS
+WHERE age = (SELECT MAX(age) FROM SAILORS);
+For each boat which was reserved by at least 5 sailors with age >= 40, find the boat id and the average age of such sailors.
+SELECT R.bid AS BoatID, AVG(S.age) AS AvgAge
+FROM RESERVERS R
+JOIN SAILORS S ON R.sid = S.sid
+WHERE R.bid IN (
+    SELECT bid
+    FROM RESERVERS
+    WHERE date >= 40
+    GROUP BY bid
+    HAVING COUNT(DISTINCT sid) >= 5
+)
+GROUP BY R.bid;
+Find sailors who reserved a boat on a specific date:
+   	SELECT SAILORS.sid, sname
+   	FROM SAILORS
+  	INNER JOIN RESERVES ON SAILORS.sid = RESERVES.sid
+   	WHERE RESERVES.date = '2023-01-15';
+Find sailors and the boats they reserved:   
+   	SELECT SAILORS.sname, BOAT.bname, RESERVES.date
+   	FROM SAILORS
+  	 JOIN RESERVES ON SAILORS.sid = RESERVES.sid
+   	JOIN BOAT ON RESERVES.bid = BOAT.bid;
+Find the youngest sailor:
+   	SELECT * FROM SAILORS
+   	WHERE age = (SELECT MIN(age) FROM SAILORS);
+Find the boat with the most reservations:
+   	SELECT BOAT.bname, COUNT(RESERVES.bid) AS reservation_count
+   	FROM BOAT
+   	LEFT JOIN RESERVES ON BOAT.bid = RESERVES.bid
+   	GROUP BY BOAT.bid
+   	ORDER BY reservation_count DESC
+   	LIMIT 1;
+
+
+
+
+Find sailors who have not made any reservations:
+   	SELECT SAILORS.sid, SAILORS.sname
+   	FROM SAILORS
+   	LEFT JOIN RESERVES ON SAILORS.sid = RESERVES.sid
+   	WHERE RESERVES.sid IS NULL;
+Find the most recent reservation for each sailor:
+  	SELECT S.sname, B.bname, R.date
+   	FROM SAILORS S
+   	JOIN RESERVES R ON S.sid = R.sid
+   	JOIN BOAT B ON R.bid = B.bid
+   	WHERE (S.sid, R.date) IN (
+       SELECT sid, MAX(date) 
+       FROM RESERVES 
+       GROUP BY sid );
+Find sailors and the boats they reserved with a specific color:
+   	SELECT S.sname, B.bname, R.date
+   	FROM SAILORS S
+   	JOIN RESERVES R ON S.sid = R.sid
+   	JOIN BOAT B ON R.bid = B.bid
+   	WHERE B.color = 'blue';
+Find the total number of reservations made by each sailor:
+   	SELECT S.sname, COUNT(R.sid) AS reservation_count
+  	FROM SAILORS S
+   	LEFT JOIN RESERVES R ON S.sid = R.sid
+   	GROUP BY S.sid, S.sname
+   	ORDER BY reservation_count DESC;
+Find the Boats that haven’t been reserved:
+SELECT B.bid, B.bname
+FROM BOAT B
+LEFT JOIN RESERVES R ON B.bid = R.bid
+WHERE R.bid IS NULL;
