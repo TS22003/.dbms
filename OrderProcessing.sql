@@ -108,6 +108,13 @@ WHERE w.warehouse_id = s.warehouse_id AND s.order_id = o.order_id AND o.cust_id 
 
 SELECT * FROM WharehouseWithKumarOrders;
 
+-- Produce a listing: Cname, #ofOrders, Avg_Order_Amt, where the middle column is the total number of orders by the customer and the last column is the average order amount for that customer. (Use aggregate functions)
+
+SELECT c.cname AS Cname, COUNT(o.order#) AS #ofOrders, AVG(o.order_amt) AS Avg_Order_Amt
+FROM Customer c
+LEFT JOIN Order o ON c.Cust# = o.cust#
+GROUP BY c.cname;
+
 -- Delete all orders for customer named "Kumar":
 
 DELETE FROM Orders WHERE cust_id = (SELECT cust_id FROM Customers WHERE cname LIKE "%Kumar%");
