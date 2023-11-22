@@ -1,45 +1,44 @@
+CREATE DATABASE order_processing;
+USE order_processing;
 
-create database order_processing123;
-use order_processing123;
-
-create table  Customers (
-	cust_id int primary key,
-	cname varchar(35) not null,
-	city varchar(35) not null
+CREATE TABLE Customers (
+    cust_id INT PRIMARY KEY,
+    cname VARCHAR(35) NOT NULL,
+    city VARCHAR(35) NOT NULL
 );
 
-create table  Orders (
-	order_id int primary key,
-	odate date not null,
-	cust_id int,
-	order_amt int not null,
-	foreign key (cust_id) references Customers(cust_id) on delete cascade
+CREATE TABLE Orders (
+    order_id INT PRIMARY KEY,
+    odate DATE NOT NULL,
+    cust_id INT,
+    order_amt INT NOT NULL,
+    FOREIGN KEY (cust_id) REFERENCES Customers(cust_id) ON DELETE CASCADE
 );
 
-create table Items (
-	item_id  int primary key,
-	unitprice int not null
+CREATE TABLE Items (
+    item_id INT PRIMARY KEY,
+    unitprice INT NOT NULL
 );
 
-create table  OrderItems (
-	order_id int not null,
-	item_id int not null,
-	qty int not null,
-	foreign key (order_id) references Orders(order_id) on delete cascade,
-	foreign key (item_id) references Items(item_id) on delete cascade
+CREATE TABLE OrderItems (
+    order_id INT NOT NULL,
+    item_id INT NOT NULL,
+    qty INT NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES Items(item_id) ON DELETE CASCADE
 );
 
-create table  Warehouses (
-	warehouse_id int primary key,
-	city varchar(35) not null
+CREATE TABLE Warehouses (
+    warehouse_id INT PRIMARY KEY,
+    city VARCHAR(35) NOT NULL
 );
 
-create table Shipments (
-	order_id int not null,
-	warehouse_id int not null,
-	ship_date date not null,
-	foreign key (order_id) references Orders(order_id) on delete cascade,
-	foreign key (warehouse_id) references Warehouses(warehouse_id) on delete cascade
+CREATE TABLE Shipments (
+    order_id INT NOT NULL,
+    warehouse_id INT NOT NULL,
+    ship_date DATE NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (warehouse_id) REFERENCES Warehouses(warehouse_id) ON DELETE CASCADE
 );
 
 INSERT INTO Customers VALUES
@@ -84,7 +83,6 @@ INSERT INTO Shipments VALUES
 (004, 0003, "2019-05-16"),
 (005, 0005, "2020-12-23");
 
-
 SELECT * FROM Customers;
 SELECT * FROM Orders;
 SELECT * FROM OrderItems;
@@ -92,5 +90,55 @@ SELECT * FROM Items;
 SELECT * FROM Shipments;
 SELECT * FROM Warehouses;
 
+CREATE VIEW ShipmentDatesFromWarehouse2 AS
+SELECT order_id, ship_date
+FROM Shipments
+WHERE warehouse_id = 2;
 
+SELECT * FROM ShipmentDatesFromWarehouse2;
 
+CREATE VIEW WharehouseWithKumarOrders AS
+SELECT s.warehouse_id
+FROM Warehouses w, Customers c, Orders o, Shipments s
+WHERE w.warehouse_id = s.warehouse_id AND s.order_id = o.order_id AND o.cust_id = c.cust_id AND c.cname = "Kumar";
+
+SELECT * FROM WharehouseWithKumarOrders;
+
+DELETE FROM Orders WHERE cust_id = (SELECT cust_id FROM Customers WHERE cname LIKE "%Kumar%");
+
+DELIMITER $$
+
+CREATE TRIGGER PreventWarehouseDelete
+    BEFORE DELETE ON Warehouses
+    FOR EACH ROW
+BEGIN 
+    IF OLD.warehouse_id IN (SELECT warehouse_id FROM Shipments NATURAL JOIN Warehouses) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'An item has to be shipped from this warehouse!';
+    END IF;
+END;
+$$
+
+DELIMITER ;
+
+DELETE FROM Warehouses WHERE warehouse_id = 2;
+
+DELIMITER $$
+
+CREATE TRIGGER UpdateOrderAmt
+    AFTER INSERT ON OrderItems
+    FOR EACH ROW
+BEGIN
+    UPDATE Orders SET order_amt = (new.qty * (SELECT DISTINCT unitprice FROM Items NATURAL JOIN OrderItems WHERE item_id = new.item_id)) WHERE Orders.order_id = new.order_id;
+END;
+
+$$
+
+DELIMITER ;
+
+INSERT INTO Orders VALUES
+(006, "2020-12-23", 0004, 1200);
+
+INSERT INTO OrderItems VALUES 
+(006, 0001, 5);
+
+SELECT * FROM Orders;
