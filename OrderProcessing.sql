@@ -90,12 +90,16 @@ SELECT * FROM Items;
 SELECT * FROM Shipments;
 SELECT * FROM Warehouses;
 
+-- Listing Order# and Ship_date for orders shipped from Warehouse# "W2":
+
 CREATE VIEW ShipmentDatesFromWarehouse2 AS
 SELECT order_id, ship_date
 FROM Shipments
 WHERE warehouse_id = 2;
 
 SELECT * FROM ShipmentDatesFromWarehouse2;
+
+-- Listing Warehouse information for Customer named "Kumar" with Order# and Warehouse#:
 
 CREATE VIEW WharehouseWithKumarOrders AS
 SELECT s.warehouse_id
@@ -104,7 +108,14 @@ WHERE w.warehouse_id = s.warehouse_id AND s.order_id = o.order_id AND o.cust_id 
 
 SELECT * FROM WharehouseWithKumarOrders;
 
+-- Delete all orders for customer named "Kumar":
+
 DELETE FROM Orders WHERE cust_id = (SELECT cust_id FROM Customers WHERE cname LIKE "%Kumar%");
+
+-- Find the item with the maximum unit price
+SELECT * FROM Item WHERE unitprice = (SELECT MAX(unitprice) FROM Item);
+
+-- A trigger that updates order_amout based on quantity and unitprice of order_item: 
 
 DELIMITER $$
 
@@ -134,6 +145,15 @@ END;
 $$
 
 DELIMITER ;
+
+-- Create a view to display OrderID and shipment date of all orders shipped from warehouse 5:
+CREATE VIEW OrdersShippedFromWarehouse5 AS
+SELECT s.order#, s.ship_date
+FROM Shipment s
+WHERE s.warehouse# = 5;
+
+SELECT * FROM OrdersShippedFromWarehouse5;
+
 
 INSERT INTO Orders VALUES
 (006, "2020-12-23", 0004, 1200);
