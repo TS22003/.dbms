@@ -1,7 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-
 struct Stu{
 	int sid;
 	char name[50];
@@ -9,7 +8,6 @@ struct Stu{
 	int sem;
 	char add[100];
 };
-
 void insertStu(){
 	FILE *outfile;
 	struct Stu stu;
@@ -20,29 +18,22 @@ void insertStu(){
 	}
 	printf("\nEnter SID:");
 	scanf("%d",&stu.sid);
-	
 	while(getchar() != '\n');
 	printf("Enter name: ");
 	fgets(stu.name,sizeof(stu.name),stdin);
 	stu.name[strlen(stu.name)-1]='\0';
-	
 	printf("Enter branch: ");
 	fgets(stu.branch,sizeof(stu.branch),stdin);
 	stu.branch[strlen(stu.branch)-1]='\0';
-	
 	printf("Enter Semester:");
 	scanf("%d",&stu.sem);
-	
 	while(getchar() != '\n');
 	printf("Enter address: ");
 	fgets(stu.add,sizeof(stu.add),stdin);
 	stu.add[strlen(stu.add)-1]='\0';
-	
 	fprintf(outfile,"\n%d\t%s\t%s\t%d\t %s",stu.sid,stu.name,stu.branch,stu.sem,stu.add);
-	
 	fclose(outfile);
 }
-
 void modifyAddress(int sid){
 	FILE *infile,*temp;
 	struct Stu stu;
@@ -69,7 +60,6 @@ void modifyAddress(int sid){
 	remove("stu.txt");
 	rename("temp.txt","stu.txt");
 }
-
 void deleteStu(int sid){
 	FILE *infile,*temp;
 	struct Stu stu;
@@ -94,7 +84,6 @@ void deleteStu(int sid){
 	remove("stu.txt");
 	rename("temp.txt","stu.txt");
 }
-
 void ListAllStu(){
 	FILE *infile;
 	struct Stu stu;
@@ -127,7 +116,6 @@ void ListStuByBranch(char *b){
 	}
 	fclose(infile);
 }
-
 void ListStubyBranchandAddress(char *b, char*a){
 	FILE *infile;
 	struct Stu stu;
@@ -145,7 +133,6 @@ void ListStubyBranchandAddress(char *b, char*a){
 	}
 	fclose(infile);
 }
-
 int main(){
 	int ch,sid;
 	char b[50],a[100];
