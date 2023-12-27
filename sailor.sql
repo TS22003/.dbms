@@ -56,8 +56,8 @@ where s.sid not in
 and s.sname like "%storm%"
 order by s.sname ASC;
 select sname from Sailors s where not exists
-	(select * from Boat b where not exists
-		(select * from reserves r where r.sid=s.sid and b.bid=r.bid));
+(select * from Boat b where not exists
+(select * from reserves r where r.sid=s.sid and b.bid=r.bid));
 select sname, age
 from Sailors where age in (select max(age) from Sailors);
 select b.bid, avg(s.age) as average_age
