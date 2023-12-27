@@ -2,22 +2,22 @@ drop database if exists sailors;
 create database sailors;
 use sailors;
 create table if not exists Sailors(
-	sid int primary key,
-	sname varchar(35) not null,
-	rating float not null,
-	age int not null
+sid int primary key,
+sname varchar(35) not null,
+rating float not null,
+age int not null
 );
 create table if not exists Boat(
-	bid int primary key,
-	bname varchar(35) not null,
-	color varchar(25) not null
+bid int primary key,
+bname varchar(35) not null,
+color varchar(25) not null
 );
 create table if not exists reserves(
-	sid int not null,
-	bid int not null,
-	sdate date not null,
-	foreign key (sid) references Sailors(sid) on delete cascade,
-	foreign key (bid) references Boat(bid) on delete cascade
+sid int not null,
+bid int not null,
+sdate date not null,
+foreign key (sid) references Sailors(sid) on delete cascade,
+foreign key (bid) references Boat(bid) on delete cascade
 );
 insert into Sailors values
 (1,"Albert", 5.0, 40),
