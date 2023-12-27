@@ -85,9 +85,9 @@ create or replace trigger CheckAndDelete
 before delete on Boat
 for each row
 BEGIN
-	IF EXISTS (select * from reserves where reserves.bid=old.bid) THEN
-		SIGNAL SQLSTATE '45000' SET message_text='Boat is reserved and hence cannot be deleted';
-	END IF;
+IF EXISTS (select * from reserves where reserves.bid=old.bid) THEN
+SIGNAL SQLSTATE '45000' SET message_text='Boat is reserved and hence cannot be deleted';
+END IF;
 END;//
 DELIMITER ;
 delete from Boat where bid=103; 
@@ -96,22 +96,22 @@ create trigger BlockReservation
 before insert on reserves
 for each row
 BEGIN
-	IF EXISTS (select * from Sailors where sid=new.sid and rating<3) THEN
-		signal sqlstate '45000' set message_text='Sailor rating less than 3';
-	END IF;
+IF EXISTS (select * from Sailors where sid=new.sid and rating<3) THEN
+signal sqlstate '45000' set message_text='Sailor rating less than 3';
+END IF;
 END;//
 DELIMITER ;
 insert into reserves values
 (4,2,"2023-10-01"); 
 create table TempTable (
-	last_deleted_date date primary key
+last_deleted_date date primary key
 ); 
 DELIMITER //
 create trigger DeleteExpiredReservations
 before insert on TempTable
 for each row
 BEGIN
-	delete from reserves where sdate<curdate();
+delete from reserves where sdate<curdate();
 END;//
 DELIMITER ;
 select * from reserves; 
